@@ -66,6 +66,9 @@ module.exports = class Survey {
       case "CSAT_SUGGESTION":
         response = Response.genText(i18n.__("survey.suggestion"));
         break;
+      case "CSAT_HELP":
+        response = Response.genText(i18n.__("track.positive"));
+        break;
     }
 
     return response;
