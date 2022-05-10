@@ -83,13 +83,22 @@ module.exports = class Receive {
 
     let response;
 
-    if (message == 'track') {
+    if (message.includes('track')) {
       console.log("a7aaa")
       response = Survey.handlePayload("CSAT_SUGGESTION");
+      //Insert PSID in google sheet hereee 
+      console.log(this.user.psid, "PSID")
+    }
+    else if (message.includes('order status')) {
+      response = Response.genText("status hereeee")
+      console.log(this.user.psid, "PSID")
+
     }
     else {
       console.log("a7aaa fail")
       response = Survey.handlePayload("CSAT_HELP");
+      console.log(this.user.psid, "PSID")
+
     }
     return response;
   }

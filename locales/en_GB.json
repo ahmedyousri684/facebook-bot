@@ -1,8 +1,18 @@
 {
     "track": {
-        "positive": "Please wirte 'Track'"
+        "positive": "If you want to turn on shipment tracking notefication please wirte 'Track', if you want to know the status of you order please wite 'order status",
+        "status": "Please wait we are getting back to you in few seconds"
     },
     "survey": {
         "suggestion": "Confirmed"
+    },
+    "profile": {
+        "greeting": "profile.greeting"
+    },
+    "menu": {
+        "order": "menu.order",
+        "help": "menu.help",
+        "suggestion": "menu.suggestion",
+        "shop": "menu.shop"
     }
 }
