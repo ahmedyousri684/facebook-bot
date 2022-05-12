@@ -1,5 +1,5 @@
 const baseUrl = "https://sheets-integrations-api.herokuapp.com/";
-
+const axios = require('axios');
 module.exports = class SheetIntegration {
     static async makeRequest(apiUrl, requestOptions) {
         try {
@@ -10,22 +10,24 @@ module.exports = class SheetIntegration {
             return error;
         }
     }
-    static async turnNotificationOn(phone, psid) {
-        baseUrl += `?phone=${phone}&psid=${psid}`
-        const res = await makeRequest(`${baseUrl}`, {
-            method: "POST",
-            body: JSON.stringify(contact_us_data),
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type": "application/json"
-
+    static async turnNotificationOn(data) {
+        let URL = `https://sheets-integrations-api.herokuapp.com/?phone=${data.phone}&psid=${data.psid}`
+        return await axios({
+            method: "post",
+            url: URL,
+            config: {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "content-Type": "application/json",
+                },
             },
-        });
-        return res;
+        }).catch(function (err) {
+            console.log("catch heree")
+            return err;
+        })
     }
     static async getOrderStatus(phone) {
-        baseUrl += `?phone=${phone}`
-        let URL = baseUrl;
+        let URL = `https://sheets-integrations-api.herokuapp.com/?phone=${phone}`;
         console.log(URL)
         return await axios({
             method: "get",
@@ -42,8 +44,7 @@ module.exports = class SheetIntegration {
     }
 
     static async getOrderStatusbyPSID(psid) {
-        baseUrl += `status-by-psid?psid=${psid}`
-        let URL = baseUrl;
+        let URL = `https://sheets-integrations-api.herokuapp.com/status-by-psid?psid=${psid}`;
         console.log(URL)
         return await axios({
             method: "get",
@@ -55,6 +56,7 @@ module.exports = class SheetIntegration {
                 },
             },
         }).catch(function (err) {
+            console.log("catch heree")
             return err;
         })
     }

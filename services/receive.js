@@ -27,7 +27,7 @@ module.exports = class Receive {
 
   // Check if the event is a message or postback and
   // call the appropriate handler function
-  handleMessage() {
+  async handleMessage() {
     let event = this.webhookEvent;
 
     let responses;
@@ -41,7 +41,7 @@ module.exports = class Receive {
         } else if (message.attachments) {
           responses = this.handleAttachmentMessage();
         } else if (message.text) {
-          responses = this.handleTextMessage();
+          responses = await this.handleTextMessage();
         }
       } else if (event.postback) {
         responses = this.handlePostback();
@@ -57,18 +57,20 @@ module.exports = class Receive {
     }
 
     if (Array.isArray(responses)) {
-      let delay = 0;
+      let delay = 1;
       for (let response of responses) {
-        this.sendMessage(response, delay * 2000, this.isUserRef);
+        console.log("yousriii 111")
+        this.sendMessage(response, delay * 5000, this.isUserRef);
         delay++;
       }
     } else {
-      this.sendMessage(responses, this.isUserRef);
+      console.log("yousriii 2222")
+      this.sendMessage(responses, 2000, this.isUserRef);
     }
   }
 
   // Handles messages events with text
-  handleTextMessage() {
+  async handleTextMessage() {
     console.log(
       "Received text:",
       `${this.webhookEvent.message.text} for ${this.user.psid}`
@@ -86,24 +88,36 @@ module.exports = class Receive {
     if (message.includes('tracking on')) {
       response = Survey.handlePayload("CSAT_SUGGESTION");
       //Insert PSID in google sheet hereee 
-      console.log(this.user.psid, "PSID")
+      let phone_number = message.split("on")[1].replace(" ", "")
+      if (phone_number) {
+        let request_body = {
+          "phone": phone_number,
+          "psid": this.user.psid
+        }
+        const api_resp = await SheetIntegration.turnNotificationOn(request_body)
+        console.log("resp here to turn on", api_resp.data.message)
+        response = Response.genText(api_resp.data.message)
+      }
     }
     else if (message.includes('تتبع الاوردر')) {
       response = Survey.handlePayload("CSAT_SUGGESTION");
       //Insert PSID in google sheet hereee 
-      console.log(this.user.psid, "PSID")
+      let phone_number = message.split("on")[1].replace(" ", "")
+      if (phone_number) {
+        let request_body = {
+          "phone": phone_number,
+          "psid": this.user.psid
+        }
+        const api_resp = await SheetIntegration.turnNotificationOn(request_body)
+        console.log("resp here to turn on", api_resp.data.message)
+        response = Response.genText(api_resp.data.message)
+      }
     }
     else if (message.includes('order status')) {
-      const api_resp = SheetIntegration.getOrderStatusbyPSID(this.user.psid)
-      console.log("sheeeeet", api_resp)
-      response = Response.genText("status hereeee")
+      const api_resp = await SheetIntegration.getOrderStatusbyPSID(this.user.psid)
+      response = Response.genText(api_resp.data.message)
     }
-    // else {
-    //   console.log("a7aaa fail")
-    //   response = Survey.handlePayload("CSAT_HELP");
-    //   console.log(this.user.psid, "PSID")
 
-    // }
     return response;
   }
 
@@ -240,7 +254,8 @@ module.exports = class Receive {
     GraphApi.callSendApi(requestBody);
   }
 
-  sendMessage(response, delay = 0, isUserRef) {
+  sendMessage(response, delay = 2, isUserRef) {
+    console.log(response, "yousriiiii")
     // Check if there is delay in the response
     if ("delay" in response) {
       delay = response["delay"];
