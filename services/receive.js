@@ -9,14 +9,14 @@
  */
 
 "use strict";
-
 const Curation = require("./curation"),
   Order = require("./order"),
   Response = require("./response"),
   Care = require("./care"),
   Survey = require("./survey"),
   GraphApi = require("./graph-api"),
-  i18n = require("../i18n.config");
+  i18n = require("../i18n.config"),
+  SheetIntegration = require("./sheets-integration")
 
 module.exports = class Receive {
   constructor(user, webhookEvent, isUserRef) {
@@ -83,23 +83,27 @@ module.exports = class Receive {
 
     let response;
 
-    if (message.includes('track')) {
-      console.log("a7aaa")
+    if (message.includes('tracking on')) {
+      response = Survey.handlePayload("CSAT_SUGGESTION");
+      //Insert PSID in google sheet hereee 
+      console.log(this.user.psid, "PSID")
+    }
+    else if (message.includes('تتبع الاوردر')) {
       response = Survey.handlePayload("CSAT_SUGGESTION");
       //Insert PSID in google sheet hereee 
       console.log(this.user.psid, "PSID")
     }
     else if (message.includes('order status')) {
+      const api_resp = SheetIntegration.getOrderStatusbyPSID(this.user.psid)
+      console.log("sheeeeet", api_resp)
       response = Response.genText("status hereeee")
-      console.log(this.user.psid, "PSID")
-
     }
-    else {
-      console.log("a7aaa fail")
-      response = Survey.handlePayload("CSAT_HELP");
-      console.log(this.user.psid, "PSID")
+    // else {
+    //   console.log("a7aaa fail")
+    //   response = Survey.handlePayload("CSAT_HELP");
+    //   console.log(this.user.psid, "PSID")
 
-    }
+    // }
     return response;
   }
 
